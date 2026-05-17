@@ -1,0 +1,6 @@
+django
+django-cors-headers
+psycopg[binary]
+supabase
+Pillow
+python-dotenv

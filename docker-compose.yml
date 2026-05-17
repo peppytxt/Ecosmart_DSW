@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_DB=ecosmart_db"
+      - "POSTGRES_USER=admin"
+      - "POSTGRES_PASSWORD=1234"
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
