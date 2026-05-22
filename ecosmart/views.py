@@ -128,6 +128,8 @@ def serialize_descarte(descarte):
         "data_coleta": iso_or_value(descarte.data_coleta) if descarte.data_coleta else None,
     }
 
+# Alterado
+
 
 def parse_quantidade_estimada(value):
     if value is None:
@@ -230,7 +232,8 @@ def user_can_access_target(request, target_user_id):
 @require_auth(["UA"])
 def api_usuarios(request):
     if request.method == "GET":
-        usuarios = [serialize_user(usuario) for usuario in Usuario.objects.all().order_by("nome")]
+        usuarios = [serialize_user(usuario)
+                    for usuario in Usuario.objects.all().order_by("nome")]
         return JsonResponse(usuarios, safe=False)
 
     if request.method == "POST":
@@ -308,17 +311,34 @@ def api_signup(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body or "{}")
-            perfil = data.get("perfil", "UC")
 
+            nome = (data.get("nome") or "").strip()
+            email = (data.get("email") or "").strip()
+            senha = (data.get("senha") or "").strip()
+
+            if not nome:
+                return JsonResponse({"error": "Nome é obrigatório"}, status=400)
+
+            if not senha:
+                return JsonResponse({"error": "Senha é obrigatória"}, status=400)
+
+            email_regex = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
+            if not email or not re.match(email_regex, email):
+                return JsonResponse({"error": "email invalido"}, status=400)
+
+            if Usuario.objects.filter(email=email).exists():
+                return JsonResponse({"error": "E-mail já cadastrado"}, status=400)
+
+            perfil = data.get("perfil", "UC")
             if perfil not in {"UC", "UP", "UE"}:
                 perfil = "UC"
 
             usuario = Usuario.objects.create(
-                nome=data.get("nome"),
-                email=data.get("email"),
+                nome=nome,
+                email=email,
                 telefone=data.get("telefone"),
                 endereco=data.get("endereco"),
-                senha=data.get("senha"),
+                senha=senha,
                 perfil=perfil,
                 status=True,
             )
@@ -377,8 +397,10 @@ def api_update_perfil(request, user_id):
 def api_dashboard_metrics(request):
     if request.method == "GET":
         try:
-            perfis = Usuario.objects.values("perfil").annotate(total=Count("perfil"))
-            usuarios_por_perfil = {item["perfil"]: item["total"] for item in perfis}
+            perfis = Usuario.objects.values(
+                "perfil").annotate(total=Count("perfil"))
+            usuarios_por_perfil = {item["perfil"]
+                : item["total"] for item in perfis}
 
             metrics = {
                 "total_usuarios": Usuario.objects.count(),
@@ -425,7 +447,8 @@ def api_usuario_detalhe(request, user_id):
 
             if request.ecosmart_user.perfil == "UA":
                 usuario.perfil = data.get("perfil", usuario.perfil)
-                usuario.status = parse_active(data.get("status"), default=usuario.status)
+                usuario.status = parse_active(
+                    data.get("status"), default=usuario.status)
 
             usuario.save()
 
@@ -462,17 +485,26 @@ def api_registrar_descarte(request):
             except Usuario.DoesNotExist:
                 return JsonResponse({"error": "Usuário não localizado no sistema."}, status=404)
 
+            quantidade = data.get("quantidade")
+            if quantidade is not None and float(quantidade) < 0:
+                return JsonResponse({"error": "Quantidade não pode ser negativa"}, status=400)
+
+            observacao = data.get("observacao") or ""
+            if len(observacao) > 1000:
+                return JsonResponse({"error": "Observação muito grande (máximo 1000 caracteres)"}, status=400)
+
             nome_residuo = data.get("tipo_residuo")
-            tipo_residuo, _ = TipoResiduo.objects.get_or_create(nome=nome_residuo)
+            tipo_residuo, _ = TipoResiduo.objects.get_or_create(
+                nome=nome_residuo)
 
             descarte = Descarte.objects.create(
                 usuario=usuario,
                 tipo_residuo=tipo_residuo,
-                quantidade=data.get("quantidade"),
+                quantidade=quantidade,
                 unidade_medida=data.get("unidade"),
                 data_descarte=data.get("data_descarte"),
                 local_descarte=data.get("local"),
-                observacoes=data.get("observacao"),
+                observacoes=observacao,
                 status="registrado",
             )
 
@@ -536,7 +568,8 @@ def api_coletar_descarte(request, descarte_id):
     descarte.instituicao_coletora = instituicoes[0] if instituicoes else None
     descarte.status = "coletado"
     descarte.data_coleta = timezone.now()
-    descarte.save(update_fields=["coletor", "instituicao_coletora", "status", "data_coleta", "updated_at"])
+    descarte.save(update_fields=[
+                  "coletor", "instituicao_coletora", "status", "data_coleta", "updated_at"])
     sync_pedido_status_from_descarte(descarte)
 
     return JsonResponse(serialize_descarte(descarte), status=200)
@@ -557,7 +590,8 @@ def api_minhas_coletas(request):
     ).filter(coletor=request.ecosmart_user)
 
     return JsonResponse(
-        [serialize_descarte(descarte) for descarte in descartes.order_by("-updated_at")],
+        [serialize_descarte(descarte)
+         for descarte in descartes.order_by("-updated_at")],
         safe=False,
     )
 
@@ -634,7 +668,8 @@ def api_descartes_empresa(request):
         ).filter(instituicao_coletora_id__in=instituicao_ids)
 
     return JsonResponse(
-        [serialize_descarte(descarte) for descarte in descartes.order_by("-data_coleta", "-created_at")],
+        [serialize_descarte(descarte) for descarte in descartes.order_by(
+            "-data_coleta", "-created_at")],
         safe=False,
     )
 
@@ -657,7 +692,8 @@ def api_workspace(request):
     vinculos = UsuarioInstituicao.objects.select_related("usuario", "instituicao").filter(
         instituicao=instituicao,
     ).order_by("-vinculo_ativo", "usuario__nome")
-    usuarios_vinculados_ativos = vinculos.filter(vinculo_ativo=True).values_list("usuario_id", flat=True)
+    usuarios_vinculados_ativos = vinculos.filter(
+        vinculo_ativo=True).values_list("usuario_id", flat=True)
     usuarios_disponiveis = Usuario.objects.filter(
         perfil__in=["UC", "UP"],
         status=True,
@@ -687,7 +723,8 @@ def api_workspace_vinculos(request):
         email = data.get("email")
 
         if usuario_id:
-            usuario = Usuario.objects.filter(id=usuario_id, status=True).first()
+            usuario = Usuario.objects.filter(
+                id=usuario_id, status=True).first()
         elif email:
             usuario = Usuario.objects.filter(email=email, status=True).first()
         else:
@@ -755,16 +792,20 @@ def api_workspace_vinculo_detalhe(request, vinculo_id):
 @require_auth()
 def api_pedidos_coleta(request):
     if request.method == "GET":
-        pedidos = PedidoColeta.objects.select_related("usuario", "tipo_residuo", "instituicao")
+        pedidos = PedidoColeta.objects.select_related(
+            "usuario", "tipo_residuo", "instituicao")
 
         if request.ecosmart_user.perfil == "UE":
-            instituicao_ids = [instituicao.id for instituicao in get_active_instituicoes(request.ecosmart_user)]
-            pedidos = pedidos.filter(instituicao_id__in=instituicao_ids) if instituicao_ids else pedidos.none()
+            instituicao_ids = [instituicao.id for instituicao in get_active_instituicoes(
+                request.ecosmart_user)]
+            pedidos = pedidos.filter(
+                instituicao_id__in=instituicao_ids) if instituicao_ids else pedidos.none()
         elif request.ecosmart_user.perfil != "UA":
             pedidos = pedidos.filter(usuario=request.ecosmart_user)
 
         return JsonResponse(
-            [serialize_pedido_coleta(pedido) for pedido in pedidos.order_by("-created_at")],
+            [serialize_pedido_coleta(pedido)
+             for pedido in pedidos.order_by("-created_at")],
             safe=False,
         )
 
@@ -787,8 +828,10 @@ def api_pedidos_coleta(request):
             if not endereco:
                 return JsonResponse({"error": "Informe o endereço de coleta"}, status=400)
 
-            quantidade, unidade = parse_quantidade_estimada(data.get("quantidade_estimada"))
-            tipo_residuo, _ = TipoResiduo.objects.get_or_create(nome=materiais[0])
+            quantidade, unidade = parse_quantidade_estimada(
+                data.get("quantidade_estimada"))
+            tipo_residuo, _ = TipoResiduo.objects.get_or_create(
+                nome=materiais[0])
             instituicoes = get_active_instituicoes(request.ecosmart_user)
 
             with transaction.atomic():
@@ -799,7 +842,8 @@ def api_pedidos_coleta(request):
                     quantidade=quantidade,
                     unidade_medida=unidade,
                     endereco_coleta=endereco,
-                    data_preferencial=data.get("data_preferencial") or date.today(),
+                    data_preferencial=data.get(
+                        "data_preferencial") or date.today(),
                     observacoes=data.get("observacao", ""),
                     status="solicitado",
                 )
