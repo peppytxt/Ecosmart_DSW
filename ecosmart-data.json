@@ -1,0 +1,251 @@
+[
+{
+  "model": "ecosmart.usuario",
+  "pk": 1,
+  "fields": {
+    "nome": "Carlos Empresa",
+    "email": "carlos@empresa.com",
+    "senha": "pbkdf2_sha256$1200000$SeKjEe3kTedvAPgl02PcVW$Gn4UYekLtm1k1n3Y8ENjjXZubemSAOjYPREghlmYllA=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UE",
+    "status": true,
+    "created_at": "2026-05-22T02:08:41.174Z",
+    "updated_at": "2026-05-22T02:08:41.174Z"
+  }
+},
+{
+  "model": "ecosmart.usuario",
+  "pk": 2,
+  "fields": {
+    "nome": "Ana Premium",
+    "email": "ana@email.com",
+    "senha": "pbkdf2_sha256$1200000$TPArC5Pi1U4l2Z2eDhEwRq$6c7XLlvyAcDdwr2Dwi0Ph2T84P4MWMUtiqqHc3Q08A4=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UP",
+    "status": true,
+    "created_at": "2026-05-22T02:08:41.592Z",
+    "updated_at": "2026-05-22T02:08:41.592Z"
+  }
+},
+{
+  "model": "ecosmart.usuario",
+  "pk": 3,
+  "fields": {
+    "nome": "João Premium",
+    "email": "joao@email.com",
+    "senha": "pbkdf2_sha256$1200000$cfXO49WGn3AYYSdjGUoDIy$qo2JREnj4RLwtdx/69x2I0cr+gaVtfOIFdKadazgZPA=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UP",
+    "status": true,
+    "created_at": "2026-05-22T02:08:42.042Z",
+    "updated_at": "2026-05-22T02:08:42.042Z"
+  }
+},
+{
+  "model": "ecosmart.usuario",
+  "pk": 4,
+  "fields": {
+    "nome": "Maria Silva",
+    "email": "maria@email.com",
+    "senha": "pbkdf2_sha256$1200000$e8S68wUskgkJN53epYDxGR$ZVRYYyKCUJqhzII5ameY0oI1McMfKXe3a6lVNzmnGSM=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UC",
+    "status": true,
+    "created_at": "2026-05-22T02:08:42.436Z",
+    "updated_at": "2026-05-22T02:08:42.436Z"
+  }
+},
+{
+  "model": "ecosmart.usuario",
+  "pk": 5,
+  "fields": {
+    "nome": "Pedro Santos",
+    "email": "pedro@email.com",
+    "senha": "pbkdf2_sha256$1200000$gBbDznrcpx3berYreB35cE$GpFSiNNzmQzjiX3c7Uqrdu7m9jLiVxHn82Fcw9XAoRg=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UC",
+    "status": true,
+    "created_at": "2026-05-22T02:08:42.832Z",
+    "updated_at": "2026-05-22T02:08:42.832Z"
+  }
+},
+{
+  "model": "ecosmart.usuario",
+  "pk": 6,
+  "fields": {
+    "nome": "Admin Sistema",
+    "email": "admin@ecosmart.com",
+    "senha": "pbkdf2_sha256$1200000$oqzxKvuwSCH4drSqU7wGsM$9QGA9trOBemUrcix46Oz03eSMW/LntDz0VDNWuc+BRc=",
+    "telefone": null,
+    "endereco": null,
+    "perfil": "UA",
+    "status": true,
+    "created_at": "2026-05-22T02:08:43.168Z",
+    "updated_at": "2026-05-22T02:08:43.168Z"
+  }
+},
+{
+  "model": "ecosmart.tiporesiduo",
+  "pk": 1,
+  "fields": {
+    "nome": "Papel",
+    "descricao": "Resíduos de papel",
+    "reciclavel": true,
+    "created_at": "2026-05-22T02:08:39.865Z",
+    "updated_at": "2026-05-22T02:08:39.865Z"
+  }
+},
+{
+  "model": "ecosmart.tiporesiduo",
+  "pk": 2,
+  "fields": {
+    "nome": "Plástico",
+    "descricao": "Resíduos plásticos",
+    "reciclavel": true,
+    "created_at": "2026-05-22T02:08:40.203Z",
+    "updated_at": "2026-05-22T02:08:40.203Z"
+  }
+},
+{
+  "model": "ecosmart.tiporesiduo",
+  "pk": 3,
+  "fields": {
+    "nome": "Metal",
+    "descricao": "Resíduos metálicos",
+    "reciclavel": true,
+    "created_at": "2026-05-22T02:08:40.382Z",
+    "updated_at": "2026-05-22T02:08:40.382Z"
+  }
+},
+{
+  "model": "ecosmart.instituicao",
+  "pk": 1,
+  "fields": {
+    "nome": "EcoSmart Cooperativa",
+    "tipo": "Cooperativa",
+    "cnpj": "12.345.678/0001-99",
+    "email_contato": "contato@ecosmart.com",
+    "telefone": "(65) 99999-9999",
+    "created_at": "2026-05-22T02:08:40.693Z",
+    "updated_at": "2026-05-22T02:08:40.693Z"
+  }
+},
+{
+  "model": "ecosmart.usuarioinstituicao",
+  "pk": 1,
+  "fields": {
+    "usuario": 1,
+    "instituicao": 1,
+    "vinculo_ativo": true,
+    "created_at": "2026-05-22T02:08:43.342Z",
+    "updated_at": "2026-05-22T02:08:43.342Z"
+  }
+},
+{
+  "model": "ecosmart.usuarioinstituicao",
+  "pk": 2,
+  "fields": {
+    "usuario": 2,
+    "instituicao": 1,
+    "vinculo_ativo": true,
+    "created_at": "2026-05-22T02:08:43.517Z",
+    "updated_at": "2026-05-22T02:08:43.517Z"
+  }
+},
+{
+  "model": "ecosmart.usuarioinstituicao",
+  "pk": 3,
+  "fields": {
+    "usuario": 4,
+    "instituicao": 1,
+    "vinculo_ativo": true,
+    "created_at": "2026-05-22T02:08:43.690Z",
+    "updated_at": "2026-05-22T02:08:43.690Z"
+  }
+},
+{
+  "model": "ecosmart.descarte",
+  "pk": 1,
+  "fields": {
+    "usuario": 4,
+    "tipo_residuo": 1,
+    "coletor": null,
+    "instituicao_coletora": null,
+    "pedido_coleta": null,
+    "quantidade": "5.00",
+    "unidade_medida": "kg",
+    "data_descarte": "2026-04-07",
+    "local_descarte": "Residência",
+    "observacoes": "Papelão e jornais",
+    "foto": "",
+    "status": "registrado",
+    "data_coleta": null,
+    "created_at": "2026-05-22T02:08:43.867Z",
+    "updated_at": "2026-05-22T02:08:43.867Z"
+  }
+},
+{
+  "model": "ecosmart.descarte",
+  "pk": 2,
+  "fields": {
+    "usuario": 5,
+    "tipo_residuo": 2,
+    "coletor": null,
+    "instituicao_coletora": null,
+    "pedido_coleta": null,
+    "quantidade": "3.00",
+    "unidade_medida": "kg",
+    "data_descarte": "2026-04-08",
+    "local_descarte": "Residência",
+    "observacoes": "Garrafas PET",
+    "foto": "",
+    "status": "coletado",
+    "data_coleta": null,
+    "created_at": "2026-05-22T02:08:44.042Z",
+    "updated_at": "2026-05-22T02:08:44.042Z"
+  }
+},
+{
+  "model": "ecosmart.descarte",
+  "pk": 3,
+  "fields": {
+    "usuario": 2,
+    "tipo_residuo": 3,
+    "coletor": null,
+    "instituicao_coletora": null,
+    "pedido_coleta": null,
+    "quantidade": "2.00",
+    "unidade_medida": "kg",
+    "data_descarte": "2026-04-08",
+    "local_descarte": "Ponto de coleta",
+    "observacoes": "Latas de alumínio",
+    "foto": "",
+    "status": "processado",
+    "data_coleta": null,
+    "created_at": "2026-05-22T02:08:44.215Z",
+    "updated_at": "2026-05-22T02:08:44.215Z"
+  }
+},
+{
+  "model": "ecosmart.pedidocoleta",
+  "pk": 1,
+  "fields": {
+    "usuario": 1,
+    "instituicao": 1,
+    "tipo_residuo": 1,
+    "quantidade": "20.00",
+    "unidade_medida": "kg",
+    "endereco_coleta": "Rua Central, 1000",
+    "data_preferencial": "2026-04-10",
+    "status": "solicitado",
+    "observacoes": "Coleta institucional",
+    "created_at": "2026-05-22T02:08:44.390Z",
+    "updated_at": "2026-05-22T02:08:44.390Z"
+  }
+}
+]

@@ -49,11 +49,11 @@ EcoSmart é uma plataforma digital colaborativa que conecta cidadãos, empresas,
 - **Recharts** para visualização de dados
 - **Radix UI** para componentes acessíveis
 
-### Backend (Fase Futura)
-- **Supabase** como backend/database
-- **PostgreSQL** via Supabase
-- **Edge Functions** para lógica de negócio
-- **Row Level Security (RLS)**
+### Backend
+- **Django** como API da aplicação
+- **SQLite** para desenvolvimento rápido local
+- **PostgreSQL** local ou **Supabase PostgreSQL** para banco em nuvem
+- Autenticação e controle de acesso implementados na API Django
 
 ### Automação
 - **Make** para notificações e integrações
@@ -179,21 +179,20 @@ src/
 ## ⚙️ Configuração Local
 
 1. Copie `.env.example` para `.env` e ajuste as variáveis do banco.
-2. Para desenvolvimento local sem Docker/Postgres, mantenha:
+2. Ative o ambiente virtual antes dos comandos Python:
+   - `source .venv/bin/activate`
+3. Para desenvolvimento local sem Docker/Postgres, mantenha:
    - `DATABASE_ENGINE=sqlite`
    - `SQLITE_DB_PATH=db.sqlite3`
-3. Para usar o PostgreSQL local do `docker-compose.yml`, altere para `DATABASE_ENGINE=postgres` e mantenha:
+4. Para usar o PostgreSQL local do `docker-compose.yml`, altere para `DATABASE_ENGINE=postgres` e mantenha:
    - `POSTGRES_DB=ecosmart_db`
    - `POSTGRES_USER=admin`
    - `POSTGRES_PASSWORD=1234`
    - `POSTGRES_HOST=localhost`
-4. Rode `python manage.py migrate` e depois `python manage.py seed_db` para criar as credenciais de teste.
-5. Inicie o backend com `python manage.py runserver`.
-6. Inicie o frontend com `npm run dev`.
-
-Para uma pessoa rodar o projeto no Linux, use o passo a passo completo:
-
-- [`docs/execucao-linux.md`](docs/execucao-linux.md)
+5. Para usar o Supabase como banco em nuvem, configure `DATABASE_URL` com a connection string do projeto e `sslmode=require`. Veja [`SUPABASE_INTEGRATION.md`](SUPABASE_INTEGRATION.md).
+6. Rode `python manage.py migrate` e depois `python manage.py seed_db` para criar as credenciais de teste.
+7. Inicie o backend com `python manage.py runserver`.
+8. Inicie o frontend com `npm run dev`.
 
 O frontend usa `VITE_API_URL` para encontrar a API Django. Login e cadastro recebem um token assinado pelo Django, salvo no navegador, e as chamadas internas enviam esse token no header `Authorization`.
 

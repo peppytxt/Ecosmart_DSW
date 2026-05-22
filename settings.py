@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import parse_qsl, unquote, urlparse
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -77,8 +78,43 @@ TEMPLATES = [
 ]
 
 DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "sqlite").strip().lower()
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 
-if DATABASE_ENGINE == "postgres":
+
+def postgres_options_from_env(default_sslmode=None):
+    sslmode = os.getenv("POSTGRES_SSLMODE", default_sslmode)
+    return {"sslmode": sslmode} if sslmode else {}
+
+
+def database_from_url(database_url):
+    parsed = urlparse(database_url)
+    if parsed.scheme not in {"postgres", "postgresql"}:
+        raise ValueError("DATABASE_URL deve usar postgres:// ou postgresql://")
+
+    query_options = dict(parse_qsl(parsed.query))
+    sslmode = query_options.pop("sslmode", os.getenv("POSTGRES_SSLMODE", "require"))
+
+    config = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/") or "postgres"),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or 5432),
+    }
+
+    options = {**query_options}
+    if sslmode:
+        options["sslmode"] = sslmode
+    if options:
+        config["OPTIONS"] = options
+
+    return config
+
+
+if DATABASE_URL:
+    DATABASES = {"default": database_from_url(DATABASE_URL)}
+elif DATABASE_ENGINE == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -87,6 +123,7 @@ if DATABASE_ENGINE == "postgres":
             "PASSWORD": os.getenv("POSTGRES_PASSWORD", "1234"),
             "HOST": os.getenv("POSTGRES_HOST", "localhost"),
             "PORT": os.getenv("POSTGRES_PORT", "5432"),
+            "OPTIONS": postgres_options_from_env(),
         }
     }
 else:
