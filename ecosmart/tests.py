@@ -9,11 +9,15 @@ from .auth import EcoSmartAuthMiddleware, create_auth_token, require_auth
 from .models import Descarte, Instituicao, PedidoColeta, TipoResiduo, Usuario, UsuarioInstituicao
 
 
-@override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class BackendQualityTests(TestCase):
+# MIXIN BASE — Reutiliza setUp e utilitários em todas as classes de teste.
+# Não herda de TestCase, então o Django não executa os métodos desta classe.
+
+
+class EcoSmartTestMixin:
     """
-    Suite principal de testes de qualidade do backend EcoSmart.
-    Usa MD5 como hasher de senha para tornar os testes mais rápidos.
+    Mixin base com setUp e métodos utilitários compartilhados.
+    Não herda de TestCase — o Django ignora esta classe e não executa
+    seus métodos como testes. As subclasses herdam daqui + TestCase.
     """
 
     def setUp(self):
@@ -131,6 +135,17 @@ class BackendQualityTests(TestCase):
             local_descarte="Casa",
             status="registrado",
         )
+
+
+# TESTES PRINCIPAIS — Middleware, Autenticação, Descartes, Pedidos, Workspace
+
+
+@override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
+class BackendQualityTests(EcoSmartTestMixin, TestCase):
+    """
+    Suite principal de testes de qualidade do backend EcoSmart.
+    Usa MD5 como hasher de senha para tornar os testes mais rápidos.
+    """
 
     # Testes de Middleware e Autenticação
 
@@ -769,14 +784,14 @@ class BackendQualityTests(TestCase):
         self.assertEqual(proprio_usuario.json()["nome"], "Maria Atualizada")
 
 
-# Testes de Validação de Entrada
+# TESTES DE VALIDAÇÃO DE ENTRADA
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class ValidationTests(BackendQualityTests):
+class ValidationTests(EcoSmartTestMixin, TestCase):
     """
     Testes focados em validação de dados de entrada.
-    Herda o setUp de BackendQualityTests para reutilizar os dados base.
+    Herda o setUp do EcoSmartTestMixin para reutilizar os dados base.
     """
 
     def test_signup_com_email_invalido_retorna_erro(self):
@@ -862,11 +877,11 @@ class ValidationTests(BackendQualityTests):
         self.assertIn(response.status_code, [400, 413, 422])
 
 
-# Testes de Integridade de Banco de Dados
+# TESTES DE INTEGRIDADE DE BANCO DE DADOS
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class DatabaseIntegrityTests(BackendQualityTests):
+class DatabaseIntegrityTests(EcoSmartTestMixin, TestCase):
     """
     Testes que verificam as restrições do banco de dados (NOT NULL, UNIQUE,
     chaves estrangeiras). Garante que o modelo de dados é robusto.
@@ -916,11 +931,11 @@ class DatabaseIntegrityTests(BackendQualityTests):
                 connection.check_constraints()
 
 
-# Testes de Regressão
+# TESTES DE REGRESSÃO
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class RegressionTests(BackendQualityTests):
+class RegressionTests(EcoSmartTestMixin, TestCase):
     """
     Testes de regressão: garantem que funcionalidades críticas continuam
     funcionando corretamente após alterações no código.
@@ -951,10 +966,11 @@ class RegressionTests(BackendQualityTests):
         self.assertEqual(response.status_code, 403)
 
 
-# Testes de Segurança
+# TESTES DE SEGURANÇA
+
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class SecurityTests(BackendQualityTests):
+class SecurityTests(EcoSmartTestMixin, TestCase):
     """
     Testes de segurança: verificam que tokens inválidos e acessos sem
     autenticação são corretamente bloqueados.
@@ -982,10 +998,11 @@ class SecurityTests(BackendQualityTests):
         self.assertEqual(response.status_code, 401)
 
 
-# Testes de Estresse / Carga
+# TESTES DE ESTRESSE / CARGA
+
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class StressTests(BackendQualityTests):
+class StressTests(EcoSmartTestMixin, TestCase):
     """
     Testes de estresse: simulam volume elevado de requisições para verificar
     que o sistema se mantém estável sob carga.
@@ -1031,11 +1048,11 @@ class StressTests(BackendQualityTests):
             self.assertEqual(response.status_code, 200)
 
 
-# Testes de Tratamento de Erro
+# TESTES DE TRATAMENTO DE ERRO
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class ErrorHandlingTests(BackendQualityTests):
+class ErrorHandlingTests(EcoSmartTestMixin, TestCase):
     """
     Testes de tratamento de erro: verificam o comportamento da API
     para requisições malformadas, rotas inexistentes e métodos inválidos.
@@ -1058,11 +1075,11 @@ class ErrorHandlingTests(BackendQualityTests):
 
         self.assertIn(response.status_code, [400, 405])
 
-# Testes de Integridade de Workflow
+# TESTES DE INTEGRIDADE DE WORKFLOW
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
-class WorkflowIntegrityTests(BackendQualityTests):
+class WorkflowIntegrityTests(EcoSmartTestMixin, TestCase):
     """
     Testes de integridade de workflow: garantem que os fluxos de negócio
     seguem a ordem correta de estados e transições.
