@@ -71,6 +71,7 @@ Recursos demonstrativos ou parcialmente mockados:
 - [API Django](docs/api.md)
 - [Modelo de dados](docs/modelo-dados.md)
 - [Controle de acesso](docs/controle-acesso.md)
+- [Evidencia de autenticacao e autorizacao](docs/evidencia-autenticacao-autorizacao.md)
 - [Qualidade e testes do backend](docs/qualidade-backend.md)
 - [Relatório de execução de testes](docs/relatorio-execucao-testes.md)
 - [Matriz de casos de teste](docs/matriz-casos-teste.md)
