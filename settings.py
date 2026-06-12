@@ -61,6 +61,8 @@ CORS_ALLOWED_ORIGINS = env_list("DJANGO_CORS_ALLOWED_ORIGINS", ["http://localhos
 
 ROOT_URLCONF = "urls"
 
+WSGI_APPLICATION = "wsgi.application"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
