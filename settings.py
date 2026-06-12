@@ -59,7 +59,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = env_bool("DJANGO_CORS_ALLOW_ALL_ORIGINS", default=DEBUG)
 CORS_ALLOWED_ORIGINS = env_list("DJANGO_CORS_ALLOWED_ORIGINS", ["http://localhost:5173"])
 
-ROOT_URLCONF = "ecosmart.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATES = [
     {
