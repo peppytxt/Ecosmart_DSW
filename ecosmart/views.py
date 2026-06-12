@@ -870,14 +870,22 @@ def api_pedidos_coleta(request):
 @require_auth()
 def api_historico_descartes(request):
     if request.method == "GET":
-        usuario_id = request.GET.get("usuario_id")
+        # 1. Descobre quem é o usuário real através do Token criptografado
+        usuario_logado_id = request.ecosmart_user.get("id") if request.ecosmart_user else None
+        perfil_logado = request.ecosmart_user.get("perfil") if request.ecosmart_user else None
 
-        if not usuario_id:
+        # 2. Pega o ID que foi digitado na URL (?usuario_id=X)
+        usuario_alvo_id = request.GET.get("usuario_id")
+
+        if not usuario_alvo_id:
             return JsonResponse({"error": "ID do usuário não fornecido"}, status=400)
+        
+        if perfil_logado != "UA" and str(usuario_logado_id) != str(usuario_alvo_id):
+            return JsonResponse({
+                "error": "Acesso negado. Você não tem permissão para visualizar o histórico de outro usuário."
+            }, status=403)
 
-        if not user_can_access_target(request, usuario_id):
-            return JsonResponse({"error": "Permissão insuficiente"}, status=403)
-
+        # Se passou na validação, executa a busca no banco normalmente
         descartes = (
             Descarte.objects.select_related(
                 "usuario",
@@ -886,7 +894,7 @@ def api_historico_descartes(request):
                 "instituicao_coletora",
                 "pedido_coleta",
             )
-            .filter(usuario_id=usuario_id)
+            .filter(usuario_id=usuario_alvo_id)
             .order_by("-data_descarte")
         )
 
