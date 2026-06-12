@@ -61,7 +61,7 @@ CORS_ALLOWED_ORIGINS = env_list("DJANGO_CORS_ALLOWED_ORIGINS", ["http://localhos
 
 ROOT_URLCONF = "urls"
 
-WSGI_APPLICATION = "urls.application"
+WSGI_APPLICATION = None
 
 TEMPLATES = [
     {
